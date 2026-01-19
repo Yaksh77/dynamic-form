@@ -7,7 +7,6 @@ export async function submitDynamicForm(data: any) {
   try {
     console.log("Server received:", data);
 
-    // Drizzle query to insert data
     await db.insert(submissions).values({
       formData: data,
     });

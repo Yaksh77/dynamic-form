@@ -1,18 +1,16 @@
-// components/form-elements/FormInput.tsx
-import { UseFormRegister, FieldError } from "react-hook-form";
 import { FormElement } from "@/types/formTypes";
-import { getRules } from "@/utils/validation";
 
 interface Props {
   field: FormElement;
-  register: UseFormRegister<any>;
-  error?: FieldError;
+  value: any;
+  onChange: (name: string, value: any) => void;
+  error?: string;
 }
 
-const CommonInput = ({ field, register, error }: Props) => {
+const CommonInput = ({ field, value, onChange, error }: Props) => {
   return (
     <div className="flex flex-col gap-1">
-      {/* {field.label && (
+      {field.label && (
         <label
           htmlFor={field.name}
           className="font-semibold text-gray-700 text-sm"
@@ -22,21 +20,21 @@ const CommonInput = ({ field, register, error }: Props) => {
             <span className="text-red-500">*</span>
           )}
         </label>
-      )} */}
+      )}
       <input
         type={field.inputType || "text"}
         placeholder={field.placeholder}
+        value={value || ""}
+        onChange={(e) => onChange(field.name, e.target.value)}
         className={`p-2 border rounded-md w-full ${field.className} ${
           error
             ? "border-red-500 focus:ring-red-500"
             : "border-gray-300 focus:ring-blue-500"
         }`}
-        {...register(field.name, getRules(field))}
       />
-      {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
+      {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
     </div>
   );
 };
 
-
-export default CommonInput
+export default CommonInput;

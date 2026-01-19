@@ -1,11 +1,11 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import React, { useState } from "react";
 import { FormElement } from "@/types/formTypes";
-import { getRules } from "@/utils/validation";
 import CommonInput from "./CommonInput";
-import CommonButton from "./CommonButton";
 import CommonSelect from "./CommonSelect";
+import CommonButton from "./CommonButton";
+import { validateField } from "@/utils/validation";
 
 interface MasterFormProps {
   fields: FormElement[];
@@ -33,58 +33,84 @@ export default function UniversalForm({
   onSubmit,
   className,
 }: MasterFormProps) {
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors, isSubmitting },
-  } = useForm();
+  const [formData, setFormData] = useState<any>({});
+  const [errors, setErrors] = useState<any>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleInternalSubmit = async (data: any) => {
-    const success = await onSubmit(data);
+  const handleChange = (name: string, value: any) => {
+    setFormData((prev: any) => ({ ...prev, [name]: value }));
 
-    if (success) {
-      reset();
+    if (errors[name]) {
+      setErrors((prev: any) => ({ ...prev, [name]: null }));
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const newErrors: any = {};
+    let isValid = true;
+
+    fields.forEach((field) => {
+      const errorMsg = validateField(formData[field.name], field);
+      if (errorMsg) {
+        newErrors[field.name] = errorMsg;
+        isValid = false;
+      }
+    });
+
+    setErrors(newErrors);
+
+    if (isValid) {
+      setIsSubmitting(true);
+      const success = await onSubmit(formData);
+      setIsSubmitting(false);
+
+      if (success) {
+        setFormData({});
+        setErrors({});
+      }
+    }
+  };
+
+  const renderField = (field: FormElement) => {
+    switch (field.componentType) {
+      case "input":
+        return (
+          <CommonInput
+            field={field}
+            value={formData[field.name]}
+            onChange={handleChange}
+            error={errors[field.name]}
+          />
+        );
+      case "select":
+        return (
+          <CommonSelect
+            field={field}
+            value={formData[field.name]}
+            onChange={handleChange}
+            error={errors[field.name]}
+          />
+        );
+      case "button":
+        return <CommonButton field={field} isSubmitting={isSubmitting} />;
+      default:
+        return null;
     }
   };
 
   return (
     <form
-      onSubmit={handleSubmit(handleInternalSubmit)}
+      onSubmit={handleSubmit}
       className={`grid grid-cols-12 gap-4 ${className}`}
+      noValidate
     >
       {fields.map((field, index) => {
         const colClass = colSpanClasses[field.colSpan || 12];
-
         return (
-          <div key={index} className={`${colClass} flex flex-col gap-1`}>
-            {field.label && field.componentType !== "button" && (
-              <label
-                htmlFor={field.name}
-                className="font-semibold text-gray-700 text-sm"
-              >
-                {field.label}{" "}
-                {field.validation?.required && (
-                  <span className="text-red-500">*</span>
-                )}
-              </label>
-            )}
-
-            {field.componentType === "input" && (
-              <CommonInput
-                field={field}
-                register={register}
-                error={errors[field.name] as any}
-              />
-            )}
-
-            {field.componentType === "select" && (
-            <CommonSelect field={field} register={register} error={errors[field.name] as any} />
-            )} 
-
-            {field.componentType === "button" && (
-              <CommonButton field={field} isSubmitting={isSubmitting} />
-            )}
+          <div key={index} className={colClass}>
+            {renderField(field)}
           </div>
         );
       })}

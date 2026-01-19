@@ -1,5 +1,3 @@
-// types/formTypes.ts
-
 export type ComponentType =
   | "input"
   | "select"
@@ -9,27 +7,27 @@ export type ComponentType =
   | "radio";
 
 export interface FormElement {
-  name: string; 
-  componentType: ComponentType; 
+  name: string;
+  componentType: ComponentType;
 
   label?: string;
   placeholder?: string;
   className?: string;
 
-  colSpan?: number; 
+  colSpan?: number;
 
-  inputType?: string; 
+  inputType?: string;
 
   options?: { label: string; value: string }[];
 
-  buttonText?: string; 
+  buttonText?: string;
   buttonSubmitText?: string;
-  icon?: React.ReactNode; 
-  onClick?: () => void; 
+  icon?: React.ReactNode;
+  onClick?: () => void;
 
   validation?: {
-    required?: boolean; 
-    pattern?: string; 
-    errorMessage?: string; 
+    required?: boolean;
+    pattern?: string;
+    errorMessage?: string;
   };
 }

@@ -1,4 +1,3 @@
-// components/form-elements/FormButton.tsx
 import { FormElement } from "@/types/formTypes";
 
 interface buttonProps {
@@ -21,4 +20,4 @@ const CommonButton = ({ field, isSubmitting }: buttonProps) => {
   );
 };
 
-export default CommonButton
+export default CommonButton;
