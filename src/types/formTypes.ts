@@ -9,35 +9,27 @@ export type ComponentType =
   | "radio";
 
 export interface FormElement {
-  name: string; // Unique ID for state
-  componentType: ComponentType; // Main type decider
+  name: string; 
+  componentType: ComponentType; 
 
-  // Visual & Label Props
   label?: string;
   placeholder?: string;
-  className?: string; // Custom CSS classes
+  className?: string;
 
-  // Layout Prop (Grid Control)
-  colSpan?: number; // 1 to 12 (Tailwind Grid System)
+  colSpan?: number; 
 
-  // Input Specifics
-  inputType?: string; // 'text', 'password', 'email', 'submit', 'reset'
-  //   required?: boolean;
+  inputType?: string; 
 
-  // Select/Radio Specifics
   options?: { label: string; value: string }[];
 
-  // Button Specifics
-  buttonText?: string; // Button label
+  buttonText?: string; 
   buttonSubmitText?: string;
-  icon?: React.ReactNode; // Optional Icon
-  onClick?: () => void; // Custom click handler (optional)
+  icon?: React.ReactNode; 
+  onClick?: () => void; 
 
   validation?: {
-    required?: boolean; // True hoy to required
-    // minLength?: number; // Minimum characters
-    // maxLength?: number; // Maximum characters
-    pattern?: string; // Regex (mate Email, Phone)
-    errorMessage?: string; // Custom error msg (optional)
+    required?: boolean; 
+    pattern?: string; 
+    errorMessage?: string; 
   };
 }

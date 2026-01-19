@@ -1,8 +1,11 @@
 "use client";
 
-import React from "react";
 import { useForm } from "react-hook-form";
 import { FormElement } from "@/types/formTypes";
+import { getRules } from "@/utils/validation";
+import CommonInput from "./CommonInput";
+import CommonButton from "./CommonButton";
+import CommonSelect from "./CommonSelect";
 
 interface MasterFormProps {
   fields: FormElement[];
@@ -45,24 +48,6 @@ export default function UniversalForm({
     }
   };
 
-  // Aa function JSON data ne React Hook Form na rules ma convert kare che
-  const getRules = (field: FormElement) => {
-    const rules: any = {};
-
-    if (field.validation?.required) {
-      rules.required = `${field.label || field.name} is required`;
-    }
-
-    if (field.validation?.pattern) {
-      rules.pattern = {
-        value: new RegExp(field.validation.pattern),
-        message: field.validation.errorMessage || "Invalid format",
-      };
-    }
-
-    return rules;
-  };
-
   return (
     <form
       onSubmit={handleSubmit(handleInternalSubmit)}
@@ -70,11 +55,9 @@ export default function UniversalForm({
     >
       {fields.map((field, index) => {
         const colClass = colSpanClasses[field.colSpan || 12];
-        const hasError = errors[field.name];
 
         return (
           <div key={index} className={`${colClass} flex flex-col gap-1`}>
-            {/* Label */}
             {field.label && field.componentType !== "button" && (
               <label
                 htmlFor={field.name}
@@ -87,56 +70,20 @@ export default function UniversalForm({
               </label>
             )}
 
-            {/* --- INPUT --- */}
             {field.componentType === "input" && (
-              <input
-                type={field.inputType || "text"}
-                placeholder={field.placeholder}
-                className={`p-2 border rounded-md w-full ${field.className} ${
-                  hasError
-                    ? "border-red-500 focus:ring-red-500"
-                    : "border-gray-300 focus:ring-blue-500"
-                }`}
-                {...register(field.name, getRules(field))}
+              <CommonInput
+                field={field}
+                register={register}
+                error={errors[field.name] as any}
               />
             )}
 
-            {/* --- SELECT --- */}
             {field.componentType === "select" && (
-              <select
-                className={`p-2 border rounded-md w-full bg-white ${
-                  field.className
-                } ${hasError ? "border-red-500" : "border-gray-300"}`}
-                {...register(field.name, getRules(field))}
-              >
-                <option value="">Select Option</option>
-                {field.options?.map((opt, i) => (
-                  <option key={i} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
-            )}
+            <CommonSelect field={field} register={register} error={errors[field.name] as any} />
+            )} 
 
-            {/* --- BUTTON --- */}
             {field.componentType === "button" && (
-              <button
-                type={field.inputType === "submit" ? "submit" : "button"}
-                disabled={isSubmitting}
-                className={`w-full py-2 px-4 rounded flex items-center justify-center gap-2 ${
-                  field.className
-                } ${isSubmitting ? "opacity-50" : ""}`}
-              >
-                {field.icon && <span>{field.icon}</span>}
-                {isSubmitting ? field.buttonSubmitText : field.buttonText}
-              </button>
-            )}
-
-            {/* --- ERROR MESSAGE --- */}
-            {hasError && (
-              <p className="text-red-500 text-xs mt-1">
-                {errors[field.name]?.message as string}
-              </p>
+              <CommonButton field={field} isSubmitting={isSubmitting} />
             )}
           </div>
         );

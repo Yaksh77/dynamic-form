@@ -6,7 +6,6 @@ import { FormElement } from "@/types/formTypes";
 import { SaveIcon } from "lucide-react";
 
 export default function Page() {
-  // Json data
   const formConfig: FormElement[] = [
     {
       name: "firstName",
